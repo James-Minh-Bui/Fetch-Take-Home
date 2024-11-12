@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt Processor</title>
+</head>
+<body>
+    <h1>Submit Receipt</h1>
+    
+    <!-- Form to input JSON string -->
+    <textarea id="receipt" placeholder='{"retailer": "Target", "total": "35.35", "items": [{"shortDescription": "item", "price": "12.00"}]}'></textarea><br>
+    <button onclick="submitReceipt()">Submit Receipt</button>
+    
+    <h2>Response</h2>
+    <pre id="response"></pre>
+    
+    <h1>Retrieve Points</h1>
+    <!-- Form to input ID to fetch points -->
+    <input id="receiptId" placeholder="Enter Receipt ID"><br>
+    <button onclick="getPoints()">Get Points</button>
+    
+    <h2>Points</h2>
+    <pre id="points"></pre>
+
+    <script>
+        // Function to handle receipt submission
+        function submitReceipt() {
+            const receiptData = document.getElementById("receipt").value;
+
+            fetch('/receipts/process', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: receiptData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("response").textContent = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                document.getElementById("response").textContent = "Error: " + error;
+            });
+        }
+
+        // Function to get points by ID
+        function getPoints() {
+            const id = document.getElementById("receiptId").value;
+
+            fetch(`/receipts/${id}/points`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("points").textContent = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                document.getElementById("points").textContent = "Error: " + error;
+            });
+        }
+    </script>
+</body>
+</html>
